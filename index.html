@@ -268,8 +268,28 @@
     <!-- WALLET MOUNT POINT (DEBUG ADDED) -->
     <div id="wallet-root"
         style="position: fixed; top: 20px; right: 20px; z-index: 2000; color: #4ade80; font-size: 12px; font-weight: bold; font-family: sans-serif;">
-        <div style="padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px;">Loading Wallet...</div>
+        <div id="wallet-status" style="padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px;">Waiting for
+            React...</div>
     </div>
+
+    <!-- GLOBAL ERROR HANDLER -->
+    <script>
+        window.onerror = function (msg, url, line, col, error) {
+            const root = document.getElementById('wallet-root');
+            if (root) {
+                root.innerHTML = '<div style="background:red; color:white; padding:10px; border-radius:8px;">CRASH: ' + msg + '</div>';
+            }
+            console.error("Global Error:", msg, error);
+            return false;
+        };
+        window.addEventListener('unhandledrejection', function (event) {
+            const root = document.getElementById('wallet-root');
+            if (root) {
+                root.innerHTML = '<div style="background:orange; color:white; padding:10px; border-radius:8px;">PROMISE ERROR: ' + event.reason + '</div>';
+            }
+            console.error("Unhandled Rejection:", event.reason);
+        });
+    </script>
 
     <div>
         <h1>Check back here often for other Fun projects</h1>
@@ -416,9 +436,26 @@
             }
 
             // 4. Connected -> Show Address
+            const btnStyle = {
+                backgroundColor: '#2a2e37',
+                color: '#ffffff',
+                border: '1px solid #4ade80',
+                padding: '0 16px',
+                height: '40px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 'bold',
+                fontFamily: 'Space Grotesk, sans-serif',
+                minWidth: '140px',
+                zIndex: 2010
+            };
+
             return (
-                <button className="wallet-adapter-button wallet-adapter-button-trigger" onClick={disconnect}>
-                    {base58.slice(0, 4)}..{base58.slice(-4)}
+                <button style={btnStyle} onClick={disconnect}>
+                    Connected: {base58.slice(0, 4)}..{base58.slice(-4)}
                 </button>
             );
         };
