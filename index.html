@@ -382,12 +382,40 @@
 
         const WalletButton = () => {
             const { setVisible } = useWalletModal();
-            const { publicKey, wallet, disconnect, connected } = useWallet();
+            const { publicKey, wallet, disconnect, connected, connecting } = useWallet();
             const base58 = useMemo(() => publicKey?.toBase58(), [publicKey]);
 
-            if (!wallet) return <button className="wallet-adapter-button wallet-adapter-button-trigger" onClick={() => setVisible(true)}>Select Wallet</button>;
-            if (!base58) return <button className="wallet-adapter-button wallet-adapter-button-trigger" onClick={() => wallet.adapter.connect()}>Connect</button>;
+            console.log("WalletButton State:", {
+                hasWallet: !!wallet,
+                adapter: wallet?.adapter?.name,
+                connecting,
+                connected,
+                base58
+            });
 
+            // 1. No Wallet Selected -> Show "Select Wallet"
+            if (!wallet) {
+                return <button className="wallet-adapter-button wallet-adapter-button-trigger" onClick={() => setVisible(true)}>Select Wallet</button>;
+            }
+
+            // 2. Wallet Selected (Connecting...) -> Show "Connecting"
+            if (connecting) {
+                return <button className="wallet-adapter-button wallet-adapter-button-trigger" disabled>Connecting...</button>;
+            }
+
+            // 3. Wallet Selected (Not Connected) -> Show "Connect"
+            if (!base58) {
+                return (
+                    <button
+                        className="wallet-adapter-button wallet-adapter-button-trigger"
+                        onClick={() => wallet.adapter.connect().catch(e => console.error("Connect Error:", e))}
+                    >
+                        Connect
+                    </button>
+                );
+            }
+
+            // 4. Connected -> Show Address
             return (
                 <button className="wallet-adapter-button wallet-adapter-button-trigger" onClick={disconnect}>
                     {base58.slice(0, 4)}..{base58.slice(-4)}
