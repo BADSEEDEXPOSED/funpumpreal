@@ -369,17 +369,52 @@
             );
         };
 
+        // ERROR BOUNDARY
+        class ErrorBoundary extends React.Component {
+            constructor(props) { super(props); this.state = { hasError: false, error: null }; }
+            static getDerivedStateFromError(error) { return { hasError: true, error }; }
+            componentDidCatch(error, errorInfo) { console.error("Wallet App Crash:", error, errorInfo); }
+            render() {
+                if (this.state.hasError) {
+                    return <div style={{ padding: '10px', background: 'red', color: 'white', borderRadius: '8px', fontSize: '12px' }}>
+                        App Error. <button onClick={() => window.location.reload()} style={{ textDecoration: 'underline' }}>Reload</button>
+                    </div>;
+                }
+                return this.props.children;
+            }
+        }
+
+        // WALLET BUTTON (ROBUST)
         const WalletButton = () => {
             const { setVisible } = useWalletModal();
-            const { publicKey, wallet, disconnect, connected } = useWallet();
-            const base58 = useMemo(() => publicKey?.toBase58(), [publicKey]);
+            const { publicKey, wallet, disconnect, connecting, connected } = useWallet();
 
-            if (!wallet) return <button className="wallet-adapter-button wallet-adapter-button-trigger" onClick={() => setVisible(true)}>Select Wallet</button>;
-            if (!base58) return <button className="wallet-adapter-button wallet-adapter-button-trigger" onClick={() => wallet.adapter.connect()}>Connect</button>;
+            console.log("WalletButton Render:", { wallet: wallet?.adapter?.name, connecting, connected, pk: publicKey?.toBase58() });
+
+            const handleClick = useCallback(() => {
+                if (!wallet) return setVisible(true);
+                if (!publicKey) return wallet.adapter.connect().catch(err => {
+                    console.error("Connection Failed:", err);
+                    alert("Connection Failed: " + err.message);
+                });
+                disconnect();
+            }, [wallet, publicKey, setVisible, disconnect]);
+
+            const label = useMemo(() => {
+                if (connecting) return "Connecting...";
+                if (!wallet) return "Select Wallet";
+                if (!publicKey) return "Connect";
+                const base58 = publicKey.toBase58();
+                return base58.slice(0, 4) + '..' + base58.slice(-4);
+            }, [connecting, wallet, publicKey]);
 
             return (
-                <button className="wallet-adapter-button wallet-adapter-button-trigger" onClick={disconnect}>
-                    {base58.slice(0, 4)}..{base58.slice(-4)}
+                <button
+                    className="wallet-adapter-button wallet-adapter-button-trigger"
+                    onClick={handleClick}
+                    style={{ minWidth: '140px', display: 'flex', justifyContent: 'center', pointerEvents: 'auto' }}
+                >
+                    {label}
                 </button>
             );
         };
@@ -521,7 +556,9 @@
                 <ConnectionProvider endpoint={endpoint}>
                     <WalletProvider wallets={wallets} autoConnect>
                         <WalletModalProvider>
-                            <FeeLogic />
+                            <ErrorBoundary>
+                                <FeeLogic />
+                            </ErrorBoundary>
                         </WalletModalProvider>
                     </WalletProvider>
                 </ConnectionProvider>
