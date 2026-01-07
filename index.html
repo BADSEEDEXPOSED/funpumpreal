@@ -254,8 +254,11 @@
 
 <body>
 
-    <!-- WALLET MOUNT POINT -->
-    <div id="wallet-root" style="position: fixed; top: 20px; right: 20px; z-index: 2000;"></div>
+    <!-- WALLET MOUNT POINT (DEBUG ADDED) -->
+    <div id="wallet-root"
+        style="position: fixed; top: 20px; right: 20px; z-index: 2000; color: #4ade80; font-size: 12px; font-weight: bold; font-family: sans-serif;">
+        <div style="padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px;">Loading Wallet...</div>
+    </div>
 
     <div>
         <h1>Check back here often for other Fun projects</h1>
@@ -266,7 +269,7 @@
         Projects <span>▲</span>
     </button>
 
-    <!-- Slide Up Panel -->
+    <!-- Slide Up Panel (RESTORED) -->
     <div class="projects-panel" id="panel">
         <div class="projects-grid">
             <a href="https://pump.funpumpreal.fun/" class="project-card">
@@ -290,7 +293,11 @@
     </script>
 
     <!-- REACT / SOLANA SCRIPTS -->
-    <script>window.global = window; window.process = { env: { NODE_ENV: 'production' } };</script>
+    <script>
+        window.global = window;
+        window.process = { env: { NODE_ENV: 'production' } };
+        console.log("Global Polyfills Set");
+    </script>
     <script type="module"> import { Buffer } from 'https://esm.sh/buffer@6.0.3'; window.Buffer = Buffer; </script>
     <script type="importmap">
     {
@@ -317,6 +324,8 @@
         import { clusterApiUrl, PublicKey, Transaction, SystemProgram } from '@solana/web3.js';
         import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
         import { createTransferInstruction, createAssociatedTokenAccountInstruction, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+
+        console.log("React Script Started");
 
         // CONSTANTS
         const LOGO_URL = "realdotfun.png";
@@ -503,9 +512,10 @@
         };
 
         const App = () => {
-            // RPC ENDPOINT (Using same extrnode as source)
             const endpoint = "https://solana-mainnet.rpc.extrnode.com/90192bb3-0e9f-4c0e-b16c-80be78b565b7";
             const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
+
+            console.log("App Rendering");
 
             return (
                 <ConnectionProvider endpoint={endpoint}>
